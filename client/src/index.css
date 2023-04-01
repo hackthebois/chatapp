@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 body {
-	@apply bg-neutral-900 text-white h-screen w-screen overflow-hidden flex flex-col;
+	@apply bg-neutral-900 text-white h-full w-screen overflow-hidden flex flex-col;
+}
+
+html,
+#root {
+	@apply h-full w-screen;
 }
 
 @layer components {
