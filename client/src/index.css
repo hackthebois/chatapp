@@ -16,6 +16,23 @@ html,
 		@apply font-bold px-3 py-2 rounded border border-zinc-200;
 	}
 	.btn {
-		@apply font-bold px-3 py-2 bg-zinc-200 border border-zinc-200 text-zinc-800 rounded;
+		@apply font-bold px-3 py-2 bg-zinc-400 border border-zinc-200 text-zinc-800 rounded;
 	}
+}
+
+em-emoji-picker {
+	--background-rgb: 39, 39, 42;
+	--border-radius: 12px;
+	--category-icon-size: 20px;
+	--color-border-over: rgba(0, 0, 0, 0.1);
+	--color-border: rgba(0, 0, 0, 0.05);
+	--font-size: 16px;
+	--rgb-accent: 255, 255, 255;
+	--rgb-background: 39, 39, 42;
+	--rgb-color: 161, 161, 170;
+	--rgb-input: 39, 39, 42;
+
+	height: 50vh;
+	min-height: 400px;
+	max-height: 800px;
 }

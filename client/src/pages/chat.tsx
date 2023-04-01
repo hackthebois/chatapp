@@ -1,12 +1,12 @@
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { Form, Field } from "houseform";
 import { z } from "zod";
-import EmojiPicker, { Theme } from "emoji-picker-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaSmileBeam } from "react-icons/fa";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 import dayjs from "dayjs";
 dayjs.extend(isToday);
@@ -67,15 +67,11 @@ const Chat = () => {
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
 	const { user } = useUser();
-	const [parent] = useAutoAnimate();
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	if (!user) return null;
 
 	return (
-		<div
-			className="max-w-screen-sm m-auto p-4 sm:p-8 flex-1 w-screen flex flex-col justify-end"
-			ref={parent}
-		>
+		<div className="max-w-screen-sm m-auto p-4 sm:p-8 flex-1 w-screen flex flex-col justify-end">
 			<div className="flex-1 w-full flex flex-col justify-end items-start">
 				{messages.map((message, index) => (
 					<Message key={index} message={message} />
@@ -127,13 +123,12 @@ const Chat = () => {
 									/>
 									{showEmojiPicker && (
 										<div className="absolute right-0 bottom-16">
-											<EmojiPicker
-												onEmojiClick={({ emoji }) =>
-													setValue(`${value}${emoji}`)
-												}
-												width={300}
-												height={400}
-												theme={Theme.DARK}
+											<Picker
+												data={data}
+												onEmojiSelect={(emoji: any) => {
+													setValue(`${value}${emoji.native}`);
+												}}
+												theme="dark"
 											/>
 										</div>
 									)}
