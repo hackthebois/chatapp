@@ -5,33 +5,62 @@ import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
 import { FaSmileBeam } from "react-icons/fa";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
 
-const useOnClickOutside = (ref: any, handler: any) => {
-	useEffect(() => {
-		const listener = (event: any) => {
-			if (!ref.current || ref.current.contains(event.target)) {
-				return;
-			}
-			handler(event);
-		};
-		document.addEventListener("mousedown", listener);
-		document.addEventListener("touchstart", listener);
-		return () => {
-			document.removeEventListener("mousedown", listener);
-			document.removeEventListener("touchstart", listener);
-		};
-	}, [ref, handler]);
-};
+import dayjs from "dayjs";
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
+import useOnClickOutside from "../hooks/useOnClickOutside";
 
 const MessageSchema = z.object({
 	user: z.object({
 		id: z.string(),
 		image: z.string(),
+		fullName: z.string(),
 	}),
-	message: z.string().min(1),
+	text: z.string().min(1),
+	createdAt: z.date(),
 });
 
-type Message = z.infer<typeof MessageSchema>;
+type MessageType = z.infer<typeof MessageSchema>;
+
+const formatTime = (date: Date) => {
+	const djs = dayjs(date);
+
+	if (djs.isToday()) return `Today at ${djs.format("h:mm A")}`;
+
+	if (djs.isYesterday()) return `Yesterday at ${djs.format("h:mm A")}`;
+
+	return djs.format("MMM D, YYYY");
+};
+
+const Message = ({ message }: { message: MessageType }) => {
+	const currentUser = (Math.random() * 10) % 2 === 0;
+
+	return (
+		<>
+			<p className="mb-2">
+				<span className="text-slate-200 font-bold text-sm sm:text-base mr-2">
+					{message.user.fullName}
+				</span>
+				<span className="text-xs sm:text-sm text-slate-400">
+					{formatTime(message.createdAt)}
+				</span>
+			</p>
+			<div
+				className={`px-4 py-3 flex items-center rounded-2xl mb-4 h-14 ${
+					currentUser ? "bg-blue-600" : "bg-zinc-800"
+				}`}
+			>
+				<div className="w-8 h-8 mr-3">
+					<img src={message.user.image} className="rounded-full" />
+				</div>
+				{message.text}
+			</div>
+		</>
+	);
+};
 
 const Chat = () => {
 	const ref = useRef<HTMLDivElement | null>(null);
@@ -39,7 +68,7 @@ const Chat = () => {
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
 	const { user } = useUser();
 	const [parent] = useAutoAnimate();
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<MessageType[]>([]);
 	if (!user) return null;
 
 	return (
@@ -48,13 +77,8 @@ const Chat = () => {
 			ref={parent}
 		>
 			<div className="flex-1 w-full flex flex-col justify-end items-start">
-				{messages.map((message) => (
-					<div className="bg-zinc-800 px-3 pr-4 py-3 flex items-center rounded-2xl mb-4">
-						<div className="w-8 h-8 mr-4">
-							<img src={message.user.image} className="rounded-full" />
-						</div>
-						{message.message}
-					</div>
+				{messages.map((message, index) => (
+					<Message key={index} message={message} />
 				))}
 			</div>
 			<Form
@@ -65,8 +89,10 @@ const Chat = () => {
 							user: {
 								id: user.id,
 								image: user.profileImageUrl,
+								fullName: user.fullName || user.username || "",
 							},
-							message: data.message,
+							text: data.message,
+							createdAt: new Date(),
 						},
 					]);
 				}}
