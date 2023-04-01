@@ -8,7 +8,7 @@ const App = () => {
 	return (
 		<ClerkProvider publishableKey={clerkPubKey} appearance={{ baseTheme: dark }}>
 			<main className="w-screen h-full flex flex-col">
-				<header className="bg-zinc-800 px-4 sm:px-8 py-3">
+				<header className="bg-zinc-800 z-10 px-4 sm:px-8 py-3 shadow-2xl">
 					<nav className="max-w-screen-sm m-auto flex justify-end items-center">
 						<Link to="/" className="mr-6 font-bold">
 							Home

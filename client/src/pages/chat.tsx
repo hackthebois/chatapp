@@ -49,7 +49,7 @@ const Message = ({ message }: { message: MessageType }) => {
 				</span>
 			</p>
 			<div
-				className={`px-4 py-3 flex items-center rounded-2xl mb-4 h-14 ${
+				className={`px-4 py-3 flex items-center rounded-2xl mb-4 h-14 shadow-xl ${
 					currentUser ? "bg-blue-600" : "bg-zinc-800"
 				}`}
 			>
@@ -71,8 +71,8 @@ const Chat = () => {
 	if (!user) return null;
 
 	return (
-		<div className="max-w-screen-sm m-auto p-4 sm:p-8 flex-1 w-screen flex flex-col justify-end">
-			<div className="flex-1 w-full flex flex-col justify-end items-start">
+		<div className="max-w-screen-sm m-auto p-4 sm:p-8 sm:pt-4 flex-1 max-h-full w-screen flex flex-col justify-end overflow-y-auto">
+			<div className="flex flex-col items-start overflow-y-auto scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded mb-4">
 				{messages.map((message, index) => (
 					<Message key={index} message={message} />
 				))}
@@ -95,7 +95,7 @@ const Chat = () => {
 			>
 				{({ submit }) => (
 					<div
-						className="bg-zinc-800 px-4 pr-2 h-14 w-full rounded-2xl shadow-xl flex relative items-center"
+						className="bg-zinc-800 px-4 pr-2 min-h-[56px] h-14 w-full rounded-2xl shadow-xl flex relative items-center"
 						ref={ref}
 					>
 						<Field
