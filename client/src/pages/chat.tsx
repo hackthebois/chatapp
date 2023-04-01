@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { Form, Field } from "houseform";
 import { z } from "zod";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaSmileBeam } from "react-icons/fa";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 import useOnClickOutside from "../hooks/useOnClickOutside";
+import React from "react";
 
 const MessageSchema = z.object({
 	user: z.object({
@@ -41,19 +42,19 @@ const Message = ({ message }: { message: MessageType }) => {
 	return (
 		<>
 			<p className="mb-2">
-				<span className="text-slate-200 font-bold text-sm sm:text-base mr-2">
+				<span className="mr-2 text-sm font-bold text-slate-200 sm:text-base">
 					{message.user.fullName}
 				</span>
-				<span className="text-xs sm:text-sm text-slate-400">
+				<span className="text-xs text-slate-400 sm:text-sm">
 					{formatTime(message.createdAt)}
 				</span>
 			</p>
 			<div
-				className={`px-4 py-3 flex items-center rounded-2xl mb-4 h-14 shadow-xl ${
+				className={`mb-4 flex h-14 items-center rounded-2xl px-4 py-3 shadow-xl ${
 					currentUser ? "bg-blue-600" : "bg-zinc-800"
 				}`}
 			>
-				<div className="w-8 h-8 mr-3">
+				<div className="mr-3 h-8 w-8">
 					<img src={message.user.image} className="rounded-full" />
 				</div>
 				{message.text}
@@ -69,13 +70,23 @@ const Chat = () => {
 	const { user } = useUser();
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	if (!user) return null;
+	const scrollRef = useRef<HTMLDivElement | null>(null);
+
+	const scrollToBottom = useCallback(() => {
+		scrollRef.current?.scrollIntoView();
+	}, [scrollRef]);
+
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages, scrollToBottom]);
 
 	return (
-		<div className="max-w-screen-sm m-auto p-4 sm:p-8 sm:pt-4 flex-1 max-h-full w-screen flex flex-col justify-end overflow-y-auto">
-			<div className="flex flex-col items-start overflow-y-auto scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded mb-4">
+		<div className="m-auto flex max-h-full w-screen max-w-screen-sm flex-1 flex-col justify-end overflow-y-auto p-4 sm:p-8 sm:pt-4">
+			<div className="mb-4 flex flex-col items-start overflow-y-auto scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
 				{messages.map((message, index) => (
 					<Message key={index} message={message} />
 				))}
+				<div ref={scrollRef} />
 			</div>
 			<Form
 				onSubmit={(data) => {
@@ -95,7 +106,7 @@ const Chat = () => {
 			>
 				{({ submit }) => (
 					<div
-						className="bg-zinc-800 px-4 pr-2 min-h-[56px] h-14 w-full rounded-2xl shadow-xl flex relative items-center"
+						className="relative flex h-14 min-h-[56px] w-full items-center rounded-2xl bg-zinc-800 px-4 pr-2 shadow-xl"
 						ref={ref}
 					>
 						<Field
@@ -107,7 +118,9 @@ const Chat = () => {
 								<>
 									<input
 										value={value}
-										onChange={(e) => setValue(e.target.value)}
+										onChange={(e) =>
+											setValue(e.target.value)
+										}
 										onBlur={onBlur}
 										onKeyDown={(e) => {
 											if (e.key === "Enter") {
@@ -119,22 +132,26 @@ const Chat = () => {
 											}
 										}}
 										placeholder="Type a message..."
-										className="bg-zinc-800 outline-none flex-1"
+										className="flex-1 bg-zinc-800 outline-none"
 									/>
 									{showEmojiPicker && (
-										<div className="absolute right-0 bottom-16">
+										<div className="absolute bottom-16 right-0">
 											<Picker
 												data={data}
 												onEmojiSelect={(emoji: any) => {
-													setValue(`${value}${emoji.native}`);
+													setValue(
+														`${value}${emoji.native}`
+													);
 												}}
 												theme="dark"
 											/>
 										</div>
 									)}
 									<button
-										className="text-zinc-400 hover:bg-zinc-700 transition-colors w-10 h-10 rounded-full flex justify-center items-center"
-										onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+										className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-700"
+										onClick={() =>
+											setShowEmojiPicker(!showEmojiPicker)
+										}
 									>
 										<FaSmileBeam size={22} />
 									</button>

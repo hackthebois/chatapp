@@ -1,19 +1,23 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import React from "react";
 import { Link } from "@tanstack/react-router";
 
 const Home = () => {
 	return (
-		<div className="flex-1 p-4 sm:p-8 flex justify-center items-center">
-			<div className="flex justify-center items-center flex-col">
-				<h2 className="text-6xl font-bold text-center mb-12">The Community Chat</h2>
-				<p className="text-xl text-center mb-10">
-					Chirp is a new and open source chat application. No big tech. Just community.
+		<div className="flex flex-1 items-center justify-center p-4 sm:p-8">
+			<div className="flex flex-col items-center justify-center">
+				<h2 className="mb-12 text-center text-6xl font-bold">
+					The Community Chat
+				</h2>
+				<p className="mb-10 text-center text-xl">
+					Chirp is a new and open source chat application. No big
+					tech. Just community.
 				</p>
 				<div>
 					<a
 						href="https://github.com/hackthebois/chirp"
 						className="gbtn mr-4"
 						target="_blank"
+						rel="noreferrer"
 					>
 						View On GitHub
 					</a>
