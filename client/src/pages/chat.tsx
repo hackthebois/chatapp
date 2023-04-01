@@ -47,9 +47,9 @@ const Chat = () => {
 			className="max-w-screen-sm m-auto p-4 sm:p-8 flex-1 w-screen flex flex-col justify-end"
 			ref={parent}
 		>
-			<div className="flex-1 w-full flex flex-col justify-end">
+			<div className="flex-1 w-full flex flex-col justify-end items-start">
 				{messages.map((message) => (
-					<div className="bg-zinc-800 px-3 py-3 flex items-center rounded-2xl mb-4">
+					<div className="bg-zinc-800 px-3 pr-4 py-3 flex items-center rounded-2xl mb-4">
 						<div className="w-8 h-8 mr-4">
 							<img src={message.user.image} className="rounded-full" />
 						</div>

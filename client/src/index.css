@@ -5,3 +5,12 @@
 body {
 	@apply bg-neutral-900 text-white h-screen w-screen overflow-hidden flex flex-col;
 }
+
+@layer components {
+	.gbtn {
+		@apply font-bold px-3 py-2 rounded border border-zinc-200;
+	}
+	.btn {
+		@apply font-bold px-3 py-2 bg-zinc-200 border border-zinc-200 text-zinc-800 rounded;
+	}
+}
