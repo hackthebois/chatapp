@@ -1,10 +1,12 @@
 import App from "./App";
+import React from "react";
 import "./index.css";
 import { Router, Route, RootRoute, Navigate } from "@tanstack/react-router";
 import Home from "./pages/home";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import SignIn from "./pages/sign-in";
 import SignUp from "./pages/sign-up";
+import Channel from "./pages/channel";
 import Chat from "./pages/chat";
 
 // Create a root route
@@ -31,7 +33,7 @@ const signUpRoute = new Route({
 	component: SignUp,
 });
 
-const chatRoute = new Route({
+export const chatRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/chat",
 	component: () => (
@@ -46,8 +48,28 @@ const chatRoute = new Route({
 	),
 });
 
+export const chatChannelRoute = new Route({
+	getParentRoute: () => chatRoute,
+	path: "$channelId",
+	component: () => (
+		<>
+			<SignedIn>
+				<Channel />
+			</SignedIn>
+			<SignedOut>
+				<Navigate to="/sign-in" />
+			</SignedOut>
+		</>
+	),
+});
+
 // Create the route tree using your routes
-const routeTree = rootRoute.addChildren([homeRoute, chatRoute, signInRoute, signUpRoute]);
+const routeTree = rootRoute.addChildren([
+	homeRoute,
+	chatRoute.addChildren([chatChannelRoute]),
+	signInRoute,
+	signUpRoute,
+]);
 
 // Create the router using your route tree
 const router = new Router({ routeTree });

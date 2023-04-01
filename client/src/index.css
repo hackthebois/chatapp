@@ -3,20 +3,20 @@
 @tailwind utilities;
 
 body {
-	@apply bg-neutral-900 text-white h-full max-h-full w-screen overflow-hidden flex flex-col;
+	@apply flex h-full max-h-full w-screen flex-col overflow-hidden bg-zinc-900 text-white;
 }
 
 html,
 #root {
-	@apply h-full w-screen max-h-full;
+	@apply h-full max-h-full w-screen;
 }
 
 @layer components {
 	.gbtn {
-		@apply font-bold px-3 py-2 rounded border border-zinc-200;
+		@apply rounded border border-zinc-200 px-3 py-2 font-bold;
 	}
 	.btn {
-		@apply font-bold px-3 py-2 bg-zinc-200 border border-zinc-200 text-zinc-800 rounded;
+		@apply rounded border border-zinc-200 bg-zinc-200 px-3 py-2 font-bold text-zinc-800;
 	}
 }
 

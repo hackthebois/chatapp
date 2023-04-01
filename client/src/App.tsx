@@ -17,8 +17,8 @@ const App = () => {
 			appearance={{ baseTheme: dark }}
 		>
 			<main className="flex h-full w-screen flex-col">
-				<header className="z-10 bg-zinc-800 px-4 py-3 shadow-2xl sm:px-8">
-					<nav className="m-auto flex max-w-screen-sm items-center justify-end">
+				<header className="z-10 flex h-12 flex-row items-center justify-end bg-zinc-800 px-4 shadow-2xl sm:px-8">
+					<nav className="flex items-center justify-end">
 						<Link to="/" className="mr-6 font-bold">
 							Home
 						</Link>
