@@ -13,6 +13,7 @@
 		"@clerk/themes": "^1.5.1",
 		"@emoji-mart/data": "^1.1.2",
 		"@emoji-mart/react": "^1.1.1",
+		"@tanstack/react-query": "^4.28.0",
 		"@tanstack/react-router": "0.0.1-beta.83",
 		"@tanstack/router": "0.0.1-beta.83",
 		"dayjs": "^1.11.7",

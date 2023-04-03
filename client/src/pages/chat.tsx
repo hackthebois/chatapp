@@ -1,3 +1,5 @@
+import { useAuth } from "@clerk/clerk-react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet } from "@tanstack/react-router";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
@@ -24,80 +26,41 @@ const channels: ChannelType[] = [
 		name: "Tech",
 	},
 	{
-		id: "1",
+		id: "4",
 		name: "General",
 	},
 	{
-		id: "2",
+		id: "5",
 		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
-	},
-	{
-		id: "1",
-		name: "General",
-	},
-	{
-		id: "2",
-		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
-	},
-	{
-		id: "1",
-		name: "General",
-	},
-	{
-		id: "2",
-		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
-	},
-	{
-		id: "1",
-		name: "General",
-	},
-	{
-		id: "2",
-		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
-	},
-	{
-		id: "1",
-		name: "General",
-	},
-	{
-		id: "2",
-		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
-	},
-	{
-		id: "1",
-		name: "General",
-	},
-	{
-		id: "2",
-		name: "Bois",
-	},
-	{
-		id: "3",
-		name: "Tech",
 	},
 ];
 
+const useChannels = () => {
+	const { getToken } = useAuth();
+	return useQuery({
+		queryFn: async () => {
+			const res = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/channels`,
+				{
+					headers: { Authorization: `Bearer ${await getToken()}` },
+				}
+			);
+			if (!res.ok) {
+				throw new Error("Network response error");
+			}
+			const body = await res.json();
+			console.log(body);
+			return body;
+		},
+		queryKey: ["channels"],
+	});
+};
+
 const Chat = () => {
+	const { data } = useChannels();
+
+	console.log(data);
+
 	return (
 		<div className="flex max-h-full w-screen flex-1 justify-start overflow-y-auto">
 			<div className="flex h-full max-h-full w-64 flex-col bg-zinc-800 shadow-xl">

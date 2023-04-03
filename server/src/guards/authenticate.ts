@@ -1,16 +1,17 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import "../loadEnv";
-import { getAuth } from "@clerk/fastify";
+import { clerkClient, getAuth } from "@clerk/fastify";
 import { ClerkUser } from "../types/types";
 
-export function authenticate(request: FastifyRequest, reply: FastifyReply, done: () => void) {
-  const { user } = getAuth(request);
+export const authenticate = async (request: FastifyRequest, reply: FastifyReply, done: () => void) => {
+  const { userId } = getAuth(request);
+  const user = userId ? await clerkClient.users.getUser(userId) : null;
   if (!user) {
     return reply.status(401).send({ error: "Unauthorized" });
   } else {
     request.user = user as ClerkUser;
   }
   done();
-}
+};
 
 export default authenticate;
