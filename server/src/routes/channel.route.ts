@@ -3,7 +3,7 @@ import { authenticate } from "../guards/authenticate";
 import { getChannels, getChannel, addChannel, deleteChannel, updateChannel } from "../controllers/channel.controller";
 
 // Item schema
-const Item = {
+const Channel = {
   type: "object",
   properties: {
     id: { type: "string" },
@@ -16,7 +16,7 @@ const getChannelsOpts = {
     response: {
       200: {
         type: "array",
-        items: Item,
+        items: Channel,
       },
     },
   },
@@ -27,7 +27,7 @@ const getChannelsOpts = {
 const getChannelOpts = {
   schema: {
     response: {
-      200: Item,
+      200: Channel,
     },
   },
   preHandler: authenticate,
@@ -44,7 +44,7 @@ const postChannelOpts = {
       },
     },
     response: {
-      201: Item,
+      201: Channel,
     },
   },
   preHandler: authenticate,
@@ -69,7 +69,7 @@ const deleteChannelOpts = {
 const updateChannelOpts = {
   schema: {
     response: {
-      200: Item,
+      200: Channel,
     },
   },
   preHandler: authenticate,

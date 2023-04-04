@@ -1,6 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { NewChannel, channels } from "../Database/schema";
+import { db } from "../Database/db";
 
-const channels = [
+const channels_test = [
   {
     id: "1",
     name: "General",
@@ -23,16 +25,25 @@ const channels = [
   },
 ];
 
+interface CreateChannel {
+  name: string;
+}
+
 export const getChannels = (req: FastifyRequest, res: FastifyReply) => {
-  res.send(channels);
+  res.send(channels_test);
 };
 
 export const getChannel = (req: FastifyRequest, res: FastifyReply) => {
   res.send("get");
 };
 
-export const addChannel = (req: FastifyRequest, res: FastifyReply) => {
-  res.send("add");
+export const addChannel = async (req: FastifyRequest<{ Querystring: CreateChannel }>, res: FastifyReply) => {
+  const { name } = req.query;
+  const newChannel: NewChannel = {
+    name: name,
+  };
+
+  res.send(await db.insert(channels).values(newChannel));
 };
 
 export const deleteChannel = (req: FastifyRequest, res: FastifyReply) => {

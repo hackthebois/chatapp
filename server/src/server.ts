@@ -1,4 +1,6 @@
-import "./loadEnv";
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import Fastify from "fastify";
 import { clerkPlugin } from "@clerk/fastify";
 import routes from "./routes/channel.route";
@@ -6,14 +8,19 @@ import cors from "@fastify/cors";
 
 const fastify = Fastify();
 
-fastify.register(cors, {
-  origin: "*",
+fastify.get("/", (req, res) => {
+  res.send("MADE IT");
 });
-fastify.register(clerkPlugin);
-fastify.register(routes);
 
 const start = async () => {
   try {
+    await fastify.register(clerkPlugin);
+    await fastify.register(cors, {
+      origin: "*",
+      allowedHeaders: ["Authorization"],
+    });
+
+    await fastify.register(routes);
     await fastify.listen({ port: Number(process.env.PORT) || 8000 });
   } catch (err) {
     fastify.log.error(err);
@@ -21,5 +28,3 @@ const start = async () => {
   }
 };
 start();
-
-export default fastify;
