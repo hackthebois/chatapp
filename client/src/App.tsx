@@ -20,28 +20,7 @@ const App = () => {
 			appearance={{ baseTheme: dark }}
 		>
 			<QueryClientProvider client={queryClient}>
-				<main className="flex h-full w-screen flex-col">
-					<header className="z-10 flex h-12 flex-row items-center justify-end bg-zinc-800 px-4 shadow-2xl sm:px-8">
-						<nav className="flex items-center justify-end">
-							<Link to="/" className="mr-6 font-bold">
-								Home
-							</Link>
-							<SignedIn>
-								<Link to="/chat" className="mr-6 font-bold">
-									Chat
-								</Link>
-							</SignedIn>
-							<SignedOut>
-								<Link
-									to="/sign-in"
-									className="rounded bg-zinc-200 px-3 py-2 font-bold text-zinc-800"
-								>
-									Get Started
-								</Link>
-							</SignedOut>
-							<UserButton afterSignOutUrl="/" />
-						</nav>
-					</header>
+				<main className="relative flex h-full w-screen flex-col">
 					<Outlet />
 				</main>
 			</QueryClientProvider>
