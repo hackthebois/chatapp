@@ -4,7 +4,7 @@ import { InferModel } from "drizzle-orm";
 export const channels = mysqlTable("Channels", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
-  userId: serial("owner_id"),
+  userId: varchar("user_id", { length: 256 }),
   createdAt: datetime("created_at").notNull().default(new Date()),
   updatedAt: datetime("updated_at").notNull().default(new Date()),
 });
@@ -17,7 +17,7 @@ export const messages = mysqlTable(
   {
     id: serial("id").primaryKey(),
     message: text("message").notNull(),
-    userId: serial("owner_id"),
+    userId: varchar("user_id", { length: 256 }),
     username: varchar("name", { length: 100 }).notNull(),
     createdAt: datetime("created_at").notNull().default(new Date()),
     updatedAt: datetime("updated_at").notNull(),
