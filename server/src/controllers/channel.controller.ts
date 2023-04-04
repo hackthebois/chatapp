@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { NewChannel, channels } from "../Database/schema";
-import { db } from "../Database/db";
+import { NewChannel, channels } from "../db/schema";
+import { db } from "../db/db";
 
 const channels_test = [
   {
