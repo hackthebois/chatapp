@@ -8,6 +8,7 @@ const Channel = {
   properties: {
     id: { type: "string" },
     name: { type: "string" },
+    userId: { type: "string" },
   },
 };
 
@@ -25,11 +26,7 @@ const getChannelsOpts = {
 };
 
 const getChannelOpts = {
-  schema: {
-    response: {
-      200: Channel,
-    },
-  },
+  schema: {},
   preHandler: authenticate,
   handler: getChannel,
 };

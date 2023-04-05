@@ -6,7 +6,7 @@ import { clerkPlugin } from "@clerk/fastify";
 import routes from "./routes/channel.route";
 import cors from "@fastify/cors";
 
-const fastify = Fastify();
+const fastify = Fastify({ logger: true });
 
 fastify.get("/", (req, res) => {
   res.send("MADE IT");

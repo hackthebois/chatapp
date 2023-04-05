@@ -1,49 +1,43 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { NewChannel, channels } from "../db/schema";
+import { NewChannel, channel, channels } from "../db/schema";
 import { db } from "../db/db";
+import { v4 as uuid } from "uuid";
+import { and, eq } from "drizzle-orm/expressions";
 
-const channels_test = [
-  {
-    id: "1",
-    name: "General",
-  },
-  {
-    id: "2",
-    name: "Bois",
-  },
-  {
-    id: "3",
-    name: "Tech",
-  },
-  {
-    id: "4",
-    name: "General",
-  },
-  {
-    id: "5",
-    name: "Bois",
-  },
-];
-
-interface CreateChannel {
+interface CreateChannelDTO {
   name: string;
 }
 
-export const getChannels = (req: FastifyRequest, res: FastifyReply) => {
-  res.send(channels_test);
+interface GetChannelDTO {
+  id: string;
+}
+
+export const getChannels = async (req: FastifyRequest, res: FastifyReply) => {
+  res.send(await db.select().from(channels));
 };
 
-export const getChannel = (req: FastifyRequest, res: FastifyReply) => {
-  res.send("get");
+export const getChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
+  const { id } = req.params;
+  var channel: channel[] = await db.select().from(channels).where(eq(channels.id, id));
+
+  if (channel.length) {
+    res.send(channel[0]);
+  } else res.status(404).send("Channel Does Not Exist");
 };
 
-export const addChannel = async (req: FastifyRequest<{ Querystring: CreateChannel }>, res: FastifyReply) => {
-  const { name } = req.query;
+export const addChannel = async (req: FastifyRequest<{ Body: CreateChannelDTO }>, res: FastifyReply) => {
+  const { name } = req.body;
   const newChannel: NewChannel = {
+    id: uuid(),
     name: name,
+    userId: req.user!.id,
   };
-
-  res.send(await db.insert(channels).values(newChannel));
+  await db.insert(channels).values(newChannel);
+  const createdChannel = await db
+    .select()
+    .from(channels)
+    .where(and(eq(channels.userId, req.user!.id), eq(channels.name, name)));
+  res.send(createdChannel);
 };
 
 export const deleteChannel = (req: FastifyRequest, res: FastifyReply) => {

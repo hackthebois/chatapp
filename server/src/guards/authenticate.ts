@@ -10,7 +10,6 @@ export const authenticate = async (request: FastifyRequest, reply: FastifyReply,
   } else {
     request.user = user as ClerkUser;
   }
-  done();
 };
 
 export default authenticate;

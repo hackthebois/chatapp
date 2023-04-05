@@ -1,10 +1,10 @@
 import { mysqlTable, serial, varchar, datetime, text, uniqueIndex } from "drizzle-orm/mysql-core";
 import { InferModel } from "drizzle-orm";
 
-export const channels = mysqlTable("Channels", {
-  id: serial("id").primaryKey(),
+export const channels = mysqlTable("channels", {
+  id: varchar("id", { length: 256 }).primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
-  userId: varchar("user_id", { length: 256 }),
+  userId: varchar("user_id", { length: 256 }).notNull(),
   createdAt: datetime("created_at").notNull().default(new Date()),
   updatedAt: datetime("updated_at").notNull().default(new Date()),
 });
@@ -15,15 +15,16 @@ export type NewChannel = InferModel<typeof channels, "insert">;
 export const messages = mysqlTable(
   "messages",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 256 }).primaryKey(),
     message: text("message").notNull(),
-    userId: varchar("user_id", { length: 256 }),
-    username: varchar("name", { length: 100 }).notNull(),
+    userId: varchar("user_id", { length: 256 }).notNull(),
+    username: varchar("username", { length: 100 }).notNull(),
     createdAt: datetime("created_at").notNull().default(new Date()),
-    updatedAt: datetime("updated_at").notNull(),
+    updatedAt: datetime("updated_at").notNull().default(new Date()),
+    channelId: varchar("channel_id", { length: 256 }).notNull(),
   },
   (message) => ({
-    channelIndex: uniqueIndex("channel_idx").on(message.id),
+    channelIdIndex: uniqueIndex("channel_id_idx").on(message.channelId),
   })
 );
 
