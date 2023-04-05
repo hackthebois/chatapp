@@ -13,10 +13,13 @@ html,
 
 @layer components {
 	.gbtn {
-		@apply rounded border border-zinc-200 px-3 py-2 font-bold;
+		@apply h-14 rounded-xl border border-slate-500 px-3 py-2 font-bold text-slate-300 transition-colors hover:bg-slate-500 hover:bg-opacity-10;
 	}
 	.btn {
-		@apply rounded border border-zinc-200 bg-zinc-200 px-3 py-2 font-bold text-zinc-800;
+		@apply h-14 rounded-xl border border-slate-600 bg-slate-500 px-3 py-2 font-bold text-white transition-colors hover:border-opacity-80 hover:bg-opacity-80;
+	}
+	.input {
+		@apply relative flex h-14 min-h-[56px] w-full items-center rounded-2xl bg-zinc-800 px-4 pr-2 shadow-xl outline-none;
 	}
 }
 

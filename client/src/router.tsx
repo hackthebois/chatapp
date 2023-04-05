@@ -1,17 +1,27 @@
-import App from "./App";
 import React from "react";
 import "./index.css";
-import { Router, Route, RootRoute, Navigate } from "@tanstack/react-router";
-import Home from "./pages/home";
+import {
+	Router,
+	Route,
+	RootRoute,
+	Navigate,
+	Outlet,
+} from "@tanstack/react-router";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import SignIn from "./pages/sign-in";
-import SignUp from "./pages/sign-up";
-import Channel from "./pages/channel";
-import Chat from "./pages/chat";
+
+import Home from "./routes/home";
+import SignIn from "./routes/sign-in";
+import SignUp from "./routes/sign-up";
+import Channel from "./routes/chat/channel";
+import CreateChannel from "./routes/chat/create";
+import Chat from "./routes/chat/chat";
+
+import queryClient from "./utils/queryclient";
+import { getChannel, getChannels } from "./utils/channel";
 
 // Create a root route
 const rootRoute = new RootRoute({
-	component: App,
+	component: Outlet,
 });
 
 // Create an index route
@@ -36,6 +46,8 @@ const signUpRoute = new Route({
 export const chatRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/chat",
+	onLoad: async () =>
+		await queryClient.ensureQueryData(["channels"], getChannels),
 	component: () => (
 		<>
 			<SignedIn>
@@ -51,28 +63,32 @@ export const chatRoute = new Route({
 export const chatChannelRoute = new Route({
 	getParentRoute: () => chatRoute,
 	path: "$channelId",
-	component: () => (
-		<>
-			<SignedIn>
-				<Channel />
-			</SignedIn>
-			<SignedOut>
-				<Navigate to="/sign-in" />
-			</SignedOut>
-		</>
-	),
+	component: Channel,
+	onLoad: async ({ params: { channelId } }) => {
+		await queryClient.ensureQueryData(["channel", channelId], () =>
+			getChannel(channelId)
+		);
+	},
+});
+
+export const chatCreateRoute = new Route({
+	getParentRoute: () => chatRoute,
+	path: "/create",
+	component: CreateChannel,
 });
 
 // Create the route tree using your routes
 const routeTree = rootRoute.addChildren([
 	homeRoute,
-	chatRoute.addChildren([chatChannelRoute]),
+	chatRoute.addChildren([chatChannelRoute, chatCreateRoute]),
 	signInRoute,
 	signUpRoute,
 ]);
 
-// Create the router using your route tree
-const router = new Router({ routeTree });
+const router = new Router({
+	routeTree,
+	defaultPreload: "intent",
+});
 
 // Register your router for maximum type safety
 declare module "@tanstack/router" {

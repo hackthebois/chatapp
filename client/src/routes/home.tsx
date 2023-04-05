@@ -4,7 +4,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 const Home = () => {
 	return (
-		<>
+		<main className="relative flex h-full w-screen flex-col">
 			<header className="z-10 flex h-12 flex-row items-center justify-end bg-zinc-800 px-4 shadow-2xl sm:px-8">
 				<nav className="flex items-center justify-end">
 					<Link to="/" className="mr-6 font-bold">
@@ -50,7 +50,7 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-		</>
+		</main>
 	);
 };
 
