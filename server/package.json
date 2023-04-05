@@ -15,6 +15,7 @@
   "dependencies": {
     "@clerk/fastify": "latest",
     "@fastify/cors": "^8.2.1",
+    "@fastify/websocket": "^7.2.0",
     "@planetscale/database": "^1.6.0",
     "dotenv": "^16.0.3",
     "drizzle-orm": "0.23.5-65b5b5a",

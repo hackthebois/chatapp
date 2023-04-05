@@ -1,12 +1,13 @@
 declare module "fastify" {
-  interface FastifyRequest {
-    user?: ClerkUser;
-  }
+    interface FastifyRequest {
+        user?: ClerkUser;
+    }
 }
 
 export interface ClerkUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    profileImageUrl: string;
 }
