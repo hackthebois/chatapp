@@ -17,7 +17,7 @@ const start = async () => {
     await fastify.register(clerkPlugin);
     await fastify.register(cors, {
       origin: "*",
-      allowedHeaders: ["Authorization"],
+      allowedHeaders: ["Authorization", "Content-Type"],
     });
 
     await fastify.register(routes);

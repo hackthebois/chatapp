@@ -37,7 +37,7 @@ export const addChannel = async (req: FastifyRequest<{ Body: CreateChannelDTO }>
     .select()
     .from(channels)
     .where(and(eq(channels.userId, req.user!.id), eq(channels.name, name)));
-  res.send(createdChannel);
+  res.send(createdChannel[0]);
 };
 
 export const deleteChannel = (req: FastifyRequest, res: FastifyReply) => {
