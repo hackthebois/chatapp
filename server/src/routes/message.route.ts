@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
 import { authenticate } from "../guards/authenticate";
-import { getAllMessages, liveChat } from "../controllers/message.controller";
+import { chat, getAllMessages, liveChat } from "../controllers/message.controller";
+import { SocketStream } from "@fastify/websocket";
 
 // Item schema
 const Message = {
@@ -14,10 +15,11 @@ const Message = {
 };
 
 const LiveMessageOpts = {
-    WebSocket: true,
+    websocket: true,
     schema: {},
-    preHandler: authenticate,
-    handler: liveChat,
+    //preHandler: authenticate,
+    handler: chat,
+    wsHandler: liveChat,
 };
 
 const GetAllMessages = {
@@ -33,13 +35,13 @@ const GetAllMessages = {
     handler: getAllMessages,
 };
 
-async function chatRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
+async function messageRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
     // Live Chat
-    fastify.get("/channels/:id/chat", LiveMessageOpts, (res, req) => {});
+    fastify.get("/chat", LiveMessageOpts);
 
     fastify.get("/channels/:id/messages", GetAllMessages);
 
     done();
 }
 
-export default chatRoutes;
+export default messageRoutes;

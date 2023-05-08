@@ -1,95 +1,96 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { authenticate } from "../guards/authenticate";
 import { getChannels, getChannel, addChannel, deleteChannel, updateChannel } from "../controllers/channel.controller";
+import messageRoutes from "./message.route";
 
 // Item schema
 const Channel = {
-  type: "object",
-  properties: {
-    id: { type: "string" },
-    name: { type: "string" },
-    userId: { type: "string" },
-  },
+    type: "object",
+    properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        userId: { type: "string" },
+    },
 };
 
 const getChannelsOpts = {
-  schema: {
-    response: {
-      200: {
-        type: "array",
-        items: Channel,
-      },
+    schema: {
+        response: {
+            200: {
+                type: "array",
+                items: Channel,
+            },
+        },
     },
-  },
-  preHandler: authenticate,
-  handler: getChannels,
+    preHandler: authenticate,
+    handler: getChannels,
 };
 
 const getChannelOpts = {
-  schema: {},
-  preHandler: authenticate,
-  handler: getChannel,
+    schema: {},
+    preHandler: authenticate,
+    handler: getChannel,
 };
 
 const postChannelOpts = {
-  schema: {
-    body: {
-      type: "object",
-      required: ["name"],
-      properties: {
-        name: { type: "string" },
-      },
+    schema: {
+        body: {
+            type: "object",
+            required: ["name"],
+            properties: {
+                name: { type: "string" },
+            },
+        },
+        response: {
+            201: Channel,
+        },
     },
-    response: {
-      201: Channel,
-    },
-  },
-  preHandler: authenticate,
-  handler: addChannel,
+    preHandler: authenticate,
+    handler: addChannel,
 };
 
 const deleteChannelOpts = {
-  schema: {
-    response: {
-      200: {
-        type: "object",
-        properties: {
-          message: { type: "string" },
+    schema: {
+        response: {
+            200: {
+                type: "object",
+                properties: {
+                    message: { type: "string" },
+                },
+            },
         },
-      },
     },
-  },
-  preHandler: authenticate,
-  handler: deleteChannel,
+    preHandler: authenticate,
+    handler: deleteChannel,
 };
 
 const updateChannelOpts = {
-  schema: {
-    response: {
-      200: Channel,
+    schema: {
+        response: {
+            200: Channel,
+        },
     },
-  },
-  preHandler: authenticate,
-  handler: updateChannel,
+    preHandler: authenticate,
+    handler: updateChannel,
 };
 
-async function chatRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
-  // Get all items
-  fastify.get("/channels", getChannelsOpts);
+async function channelRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
+    // Get all items
+    fastify.get("/channels", getChannelsOpts);
 
-  // Get single items
-  fastify.get("/channels/:id", getChannelOpts);
+    // Get single items
+    fastify.get("/channels/:id", getChannelOpts);
 
-  // Add item
-  fastify.post("/channels", postChannelOpts);
+    // Add item
+    fastify.post("/channels", postChannelOpts);
 
-  // Delete item
-  fastify.delete("/channels/:id", deleteChannelOpts);
+    // Delete item
+    fastify.delete("/channels/:id", deleteChannelOpts);
 
-  // Update item
-  fastify.put("/channels/:id", updateChannelOpts);
+    // Update item
+    fastify.put("/channels/:id", updateChannelOpts);
 
-  done();
+    done();
 }
 
-export default chatRoutes;
+export default channelRoutes;
