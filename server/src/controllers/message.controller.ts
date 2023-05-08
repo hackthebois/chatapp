@@ -12,7 +12,9 @@ export const getAllMessages = async (req: FastifyRequest<{ Params: GetMessagesDT
     const { id } = req.params;
     res.send(await db.select().from(messages).where(eq(messages.channelId, id)));
 };
-export const chat = (req: FastifyRequest, res: FastifyReply) => {};
+export const chat = (req: FastifyRequest, res: FastifyReply) => {
+    res.send("CHAT APP");
+};
 
 export const liveChat = (connection: SocketStream, req: FastifyRequest) => {
     // Client connect

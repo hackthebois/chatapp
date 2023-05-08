@@ -14,14 +14,6 @@ const Message = {
     },
 };
 
-const LiveMessageOpts = {
-    websocket: true,
-    schema: {},
-    //preHandler: authenticate,
-    handler: chat,
-    wsHandler: liveChat,
-};
-
 const GetAllMessages = {
     schema: {
         response: {
@@ -37,7 +29,13 @@ const GetAllMessages = {
 
 async function messageRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
     // Live Chat
-    fastify.get("/chat", LiveMessageOpts);
+    fastify.route({
+        method: "GET",
+        url: "/chat",
+        // preHandler: authenticate,
+        handler: chat,
+        wsHandler: liveChat,
+    });
 
     fastify.get("/channels/:id/messages", GetAllMessages);
 
