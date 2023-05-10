@@ -1,6 +1,13 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { authenticate } from "../guards/authenticate";
-import { getChannels, getChannel, addChannel, deleteChannel, updateChannel } from "../controllers/channel.controller";
+import {
+    getChannels,
+    getChannel,
+    createChannel,
+    deleteChannel,
+    updateChannel,
+    joinChannel,
+} from "../controllers/channel.controller";
 import messageRoutes from "./message.route";
 
 // Item schema
@@ -32,6 +39,12 @@ const getChannelOpts = {
     handler: getChannel,
 };
 
+const joinChannelOpts = {
+    schema: {},
+    preHandler: authenticate,
+    handler: joinChannel,
+};
+
 const postChannelOpts = {
     schema: {
         body: {
@@ -46,7 +59,7 @@ const postChannelOpts = {
         },
     },
     preHandler: authenticate,
-    handler: addChannel,
+    handler: createChannel,
 };
 
 const deleteChannelOpts = {
@@ -75,19 +88,22 @@ const updateChannelOpts = {
 };
 
 async function channelRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
-    // Get all items
+    // Get all channels
     fastify.get("/channels", getChannelsOpts);
 
-    // Get single items
+    // Get single channel
     fastify.get("/channels/:id", getChannelOpts);
 
-    // Add item
+    // Join a Channel
+    fastify.get("/channels/:id/join", joinChannelOpts);
+
+    // Add channel
     fastify.post("/channels", postChannelOpts);
 
-    // Delete item
+    // Delete channel
     fastify.delete("/channels/:id", deleteChannelOpts);
 
-    // Update item
+    // Update channel
     fastify.put("/channels/:id", updateChannelOpts);
 
     done();

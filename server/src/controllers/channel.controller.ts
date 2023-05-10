@@ -1,8 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { NewChannel, channel, channels } from "../db/schema";
+import { NewChannel, channels } from "../db/schema";
 import { db } from "../db/db";
 import { v4 as uuid } from "uuid";
 import { and, eq, inArray } from "drizzle-orm/expressions";
+import { clerkClient } from "@clerk/fastify";
 
 interface ChangeChannelDTO {
     name: string;
@@ -13,19 +14,27 @@ interface GetChannelDTO {
 }
 
 export const getChannels = async (req: FastifyRequest, res: FastifyReply) => {
-    res.send(await db.select().from(channels).where(inArray(channels.id, req.user!.privateMetadata.channelIds)));
+    console.log(req.user!.privateMetadata.channelIds);
+    res.send(
+        await db
+            .select()
+            .from(channels)
+            .where(
+                inArray(channels.id, ["1ed01d30-d16d-4b8f-b5d0-01b2a5d94d13", "37fdf74f-4069-4eab-8eee-5ad282c66667"])
+            )
+    );
 };
 
 export const getChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
     const { id } = req.params;
-    var channel: channel[] = await db.select().from(channels).where(eq(channels.id, id));
+    const channel = await db.select().from(channels).where(eq(channels.id, id));
 
-    if (channel.length && req.user!.privateMetadata && req.user!.privateMetadata.channelIds.includes(id)) {
+    if (channel.length && req.user!.privateMetadata.channelIds.includes(id)) {
         res.send(channel[0]);
     } else res.status(404).send("Channel Does Not Exist");
 };
 
-export const addChannel = async (req: FastifyRequest<{ Body: ChangeChannelDTO }>, res: FastifyReply) => {
+export const createChannel = async (req: FastifyRequest<{ Body: ChangeChannelDTO }>, res: FastifyReply) => {
     const { name } = req.body;
 
     const newChannel: NewChannel = {
@@ -41,17 +50,29 @@ export const addChannel = async (req: FastifyRequest<{ Body: ChangeChannelDTO }>
         .where(and(eq(channels.ownerId, req.user!.id), eq(channels.name, name)));
 
     req.user!.privateMetadata.channelIds.push(createdChannel[0].id);
+    clerkClient.users.updateUser(req.user!.id, { privateMetadata: req.user!.privateMetadata });
+
     res.send(createdChannel[0]);
+};
+
+export const joinChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
+    const { id } = req.params;
+
+    req.user!.privateMetadata.channelIds.push(id);
+    clerkClient.users.updateUser(req.user!.id, { privateMetadata: req.user!.privateMetadata });
+
+    res.send(`Joined Channel: ${id}`);
 };
 
 export const deleteChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
     const { id } = req.params;
-    await db.delete(channels).where(and(eq(channels.id, id), eq(channels.ownerId, req.user!.id)));
 
     const deleteChannel = await db
         .select()
         .from(channels)
         .where(and(eq(channels.ownerId, req.user!.id), eq(channels.id, id)));
+
+    await db.delete(channels).where(and(eq(channels.id, id), eq(channels.ownerId, req.user!.id)));
 
     if (deleteChannel.length) res.status(400).send("Channel Was NOT Deleted");
     else res.send("Channel Was Deleted");
@@ -81,7 +102,7 @@ export const updateChannel = async (
 export default {
     getChannels,
     getChannel,
-    addChannel,
+    addChannel: createChannel,
     deleteChannel,
     updateChannel,
 };
