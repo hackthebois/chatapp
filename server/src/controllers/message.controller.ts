@@ -1,35 +1,53 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyRequest, FastifyReply, RequestGenericInterface } from "fastify";
 import { SocketStream } from "@fastify/websocket";
 import { db } from "../db/db";
 import { messages } from "../db/schema";
 import { eq } from "drizzle-orm/expressions";
 
-interface GetMessagesDTO {
-    id: string;
+export interface requestID extends RequestGenericInterface {
+    Params: {
+        id: string;
+    };
 }
 
-export const getAllMessages = async (req: FastifyRequest<{ Params: GetMessagesDTO }>, res: FastifyReply) => {
+const channelRooms: Record<string, Set<SocketStream>> = {};
+
+export const getChannelMessages = async (req: FastifyRequest<requestID>, res: FastifyReply) => {
     const { id } = req.params;
     res.send(await db.select().from(messages).where(eq(messages.channelId, id)));
 };
-export const chat = (req: FastifyRequest, res: FastifyReply) => {
-    res.send("CHAT APP");
-};
 
-export const liveChat = (connection: SocketStream, req: FastifyRequest) => {
+export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID>) => {
+    const { id } = req.params;
+
+    if (!channelRooms[id]) channelRooms[id] = new Set();
+
+    channelRooms[id].add(connection);
+
     // Client connect
-    console.log("Client connected");
+    console.dir(`Client connected: ${id}`);
     // Client message
     connection.socket.on("message", (message: unknown) => {
-        connection.socket.send("Hi Welcome");
+        // Handle incoming messages from the WebSocket connection
+        // You can process the messages or broadcast them to other clients in the same room
+        channelRooms[id].forEach((socket) => {
+            socket.socket.send(`Received in room ${id}: ${message}`);
+        });
     });
-    // Client disconnect
+
     connection.socket.on("close", () => {
-        console.log("Client disconnected");
+        // Handle WebSocket connection close event
+        // Clean up any resources or update application state
+        console.dir(`Client Disconnected: ${id}`);
+        channelRooms[id].delete(connection);
+
+        // If the room becomes empty, you can remove it from the rooms object
+        if (channelRooms[id].size === 0) {
+            delete channelRooms[id];
+        }
     });
 };
 
 export default {
     liveChat,
-    chat,
 };

@@ -1,13 +1,11 @@
+import { User } from "@clerk/backend/dist/types/api/resources/User";
+
 declare module "fastify" {
     interface FastifyRequest {
         user?: ClerkUser;
     }
 }
 
-export interface ClerkUser {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-    profileImageUrl: string;
+export interface ClerkUser extends User {
+    privateMetadata: { channelIds: string[] };
 }
