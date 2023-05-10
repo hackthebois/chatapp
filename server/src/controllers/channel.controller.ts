@@ -4,6 +4,7 @@ import { db } from "../db/db";
 import { v4 as uuid } from "uuid";
 import { and, eq, inArray } from "drizzle-orm/expressions";
 import { clerkClient } from "@clerk/fastify";
+import { sql } from "drizzle-orm/sql";
 
 interface ChangeChannelDTO {
     name: string;
@@ -19,9 +20,7 @@ export const getChannels = async (req: FastifyRequest, res: FastifyReply) => {
         await db
             .select()
             .from(channels)
-            .where(
-                inArray(channels.id, ["1ed01d30-d16d-4b8f-b5d0-01b2a5d94d13", "37fdf74f-4069-4eab-8eee-5ad282c66667"])
-            )
+            .where(sql`${channels.id} in ${req.user!.privateMetadata.channelIds}`)
     );
 };
 
