@@ -14,11 +14,19 @@ const channelRooms: Record<string, Set<SocketStream>> = {};
 
 export const getChannelMessages = async (req: FastifyRequest<requestID>, res: FastifyReply) => {
     const { id } = req.params;
-    res.send(await db.select().from(messages).where(eq(messages.channelId, id)));
+
+    if (!req.user!.privateMetadata.channelIds.includes(id))
+        res.status(400).send("You Do not have Access to this Channel");
+    else res.send(await db.select().from(messages).where(eq(messages.channelId, id)));
 };
 
 export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID>) => {
     const { id } = req.params;
+
+    if (!req.user!.privateMetadata.channelIds.includes(id)) {
+        console.log("You Do not have Access to this Channel");
+        return;
+    }
 
     if (!channelRooms[id]) channelRooms[id] = new Set();
 

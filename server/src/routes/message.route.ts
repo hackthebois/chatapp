@@ -31,8 +31,6 @@ async function messageRoutes(fastify: FastifyInstance, options: FastifyPluginOpt
         wsHandler: liveChat, // handles websockets for channels
     });
 
-    //fastify.get("/channels/:id/messages", GetAllMessages);
-
     done();
 }
 

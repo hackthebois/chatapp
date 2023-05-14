@@ -57,10 +57,13 @@ export const createChannel = async (req: FastifyRequest<{ Body: ChangeChannelDTO
 export const joinChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
     const { id } = req.params;
 
-    req.user!.privateMetadata.channelIds.push(id);
-    clerkClient.users.updateUser(req.user!.id, { privateMetadata: req.user!.privateMetadata });
-
-    res.send(`Joined Channel: ${id}`);
+    if (!req.user!.privateMetadata.channelIds.includes(id)) {
+        req.user!.privateMetadata.channelIds.push(id);
+        clerkClient.users.updateUser(req.user!.id, { privateMetadata: req.user!.privateMetadata });
+        res.send(`Joined Channel: ${id}`);
+    } else {
+        res.status(400).send(`Already Joined Channel: ${id}`);
+    }
 };
 
 export const deleteChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
