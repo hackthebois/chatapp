@@ -33,13 +33,13 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
     channelRooms[id].add(connection);
 
     // Client connect
-    console.dir(`Client connected: ${id}`);
+    console.dir(`Client connected: ${req.user!.emailAddresses[0].emailAddress}`);
     // Client message
     connection.socket.on("message", (message: unknown) => {
         // Handle incoming messages from the WebSocket connection
         // You can process the messages or broadcast them to other clients in the same room
         channelRooms[id].forEach((socket) => {
-            socket.socket.send(`Received in room ${id}: ${message}`);
+            socket.socket.send(`Room ${id}:	${req.user!.emailAddresses[0].emailAddress}: ${message}`);
         });
     });
 

@@ -15,13 +15,14 @@ interface GetChannelDTO {
 }
 
 export const getChannels = async (req: FastifyRequest, res: FastifyReply) => {
-    console.log(req.user!.privateMetadata.channelIds);
-    res.send(
-        await db
-            .select()
-            .from(channels)
-            .where(sql`${channels.id} in ${req.user!.privateMetadata.channelIds}`)
-    );
+	if (req.user!.privateMetadata.channelIds.length > 0)
+		res.send(
+			await db
+				.select()
+				.from(channels)
+				.where(sql`${channels.id} in ${req.user!.privateMetadata.channelIds}`)
+		);
+	else res.send([])
 };
 
 export const getChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {
