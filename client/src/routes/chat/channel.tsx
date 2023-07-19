@@ -93,6 +93,7 @@ const Channel = () => {
 			<div className="mt-4 flex flex-col items-start overflow-y-auto px-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
 				{messages.map((message, index) => (
 					<div
+						key={index}
 						className={`flex flex-col items-start ${
 							index === messages.length - 1 ? "" : "pb-4"
 						}`}

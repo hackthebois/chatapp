@@ -22,6 +22,7 @@ import { getChannel, getChannels } from "./utils/channel";
 // Create a root route
 const rootRoute = new RootRoute({
 	component: Outlet,
+	errorComponent: (error) => <div>{error.error.message}</div>,
 });
 
 // Create an index route
@@ -46,8 +47,9 @@ const signUpRoute = new Route({
 export const chatRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/chat",
-	onLoad: async () =>
-		await queryClient.ensureQueryData(["channels"], getChannels),
+	onLoad: async () => {
+		await queryClient.ensureQueryData(["channels"], getChannels);
+	},
 	component: () => (
 		<>
 			<SignedIn>
