@@ -23,23 +23,26 @@ export const getChannelMessages = async (req: FastifyRequest<requestID>, res: Fa
 export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID>) => {
     const { id } = req.params;
 
-    if (!req.user!.privateMetadata.channelIds.includes(id)) {
-        console.log("You Do not have Access to this Channel");
-        return;
-    }
+    // if (!req.user!.privateMetadata.channelIds.includes(id)) {
+    //     console.log("You Do not have Access to this Channel");
+    //     return;
+    // }
 
     if (!channelRooms[id]) channelRooms[id] = new Set();
 
     channelRooms[id].add(connection);
+    const user = `User{${channelRooms[id].size}}`;
 
     // Client connect
-    console.dir(`Client connected: ${req.user!.emailAddresses[0].emailAddress}`);
-    // Client message
+    //console.dir(`Client connected: ${req.user!.emailAddresses[0].emailAddress}`);
+    console.dir(`Client connected: ${user}`);
+
     connection.socket.on("message", (message: unknown) => {
         // Handle incoming messages from the WebSocket connection
-        // You can process the messages or broadcast them to other clients in the same room
+        // broadcast the messages to other clients in the same channel
         channelRooms[id].forEach((socket) => {
-            socket.socket.send(`Room ${id}:	${req.user!.emailAddresses[0].emailAddress}: ${message}`);
+            // socket.socket.send(`Room ${id}:	${req.user!.emailAddresses[0].emailAddress}: ${message}`);
+            socket.socket.send(`Room ${id}:	${user}: ${message}`);
         });
     });
 

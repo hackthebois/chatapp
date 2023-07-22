@@ -12,24 +12,41 @@ const Message = {
         username: { type: "string" },
     },
 };
+const getMessagesOpts = {
+    schema: {
+        response: {
+            200: {
+                type: "array",
+                items: Message,
+            },
+        },
+    },
+    preHandler: authenticate,
+    handler: getChannelMessages,
+};
+
+const wsOpts = {
+    schema: {
+        response: {
+            200: {
+                type: "array",
+                items: Message,
+            },
+        },
+    },
+    //preHandler: authenticate,
+    handler: getChannelMessages,
+    wsHandler: liveChat, // handles websockets for channels
+};
 
 async function messageRoutes(fastify: FastifyInstance, options: FastifyPluginOptions, done: () => void) {
     // Live Chat
-    fastify.route<requestID>({
-        method: "GET",
-        url: "/channels/:id/chat",
-        schema: {
-            response: {
-                200: {
-                    type: "array",
-                    items: Message,
-                },
-            },
-        },
-        preHandler: authenticate,
-        handler: getChannelMessages, //Gets channel Messages
-        wsHandler: liveChat, // handles websockets for channels
+    fastify.get("/channels/:id/chat", getMessagesOpts);
+
+    fastify.addHook("preValidation", async (request, reply) => {
+        // check if the request is authenticated
     });
+    fastify.get("/ws/channels/:id", { websocket: true }, liveChat);
 
     done();
 }
