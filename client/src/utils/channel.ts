@@ -1,4 +1,4 @@
-import { ChannelSchema } from "../types/channel";
+import { ChannelSchema, MessageSchema } from "../types/channel";
 
 export const getChannel = async (id: string) => {
 	const res = await fetch(
@@ -12,8 +12,11 @@ export const getChannel = async (id: string) => {
 	if (!res.ok) {
 		throw new Error("Network response error");
 	}
-	const body: unknown = await res.json();
-	return ChannelSchema.parse(body);
+	const data = await res.json();
+	data.messages = [];
+	return ChannelSchema.extend({ messages: MessageSchema.array() }).parse(
+		data
+	);
 };
 
 export const getChannels = async () => {
@@ -25,6 +28,6 @@ export const getChannels = async () => {
 	if (!res.ok) {
 		throw new Error("Network response error");
 	}
-	const body: unknown = await res.json();
-	return ChannelSchema.array().parse(body);
+	const data = await res.json();
+	return ChannelSchema.array().parse(data);
 };

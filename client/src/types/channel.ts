@@ -1,9 +1,16 @@
 import { z } from "zod";
 
+export const MessageSchema = z.object({
+	id: z.string(),
+	username: z.string(),
+	name: z.string(),
+	userId: z.string(),
+});
+export type MessageType = z.infer<typeof MessageSchema>;
+
 export const ChannelSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string().min(1).max(100),
-	userId: z.string(),
 });
 export type ChannelType = z.infer<typeof ChannelSchema>;
 

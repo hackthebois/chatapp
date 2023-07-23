@@ -23,7 +23,9 @@ const Home = () => {
 							Get Started
 						</Link>
 					</SignedOut>
-					<UserButton afterSignOutUrl="/" />
+					<UserButton
+						afterSignOutUrl={`${import.meta.env.VITE_URL}`}
+					/>
 				</nav>
 			</header>
 			<div className="flex flex-1 items-center justify-center p-4 sm:p-8">

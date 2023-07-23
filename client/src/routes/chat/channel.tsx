@@ -7,27 +7,17 @@ import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 import dayjs from "dayjs";
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 import React from "react";
 import { useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getChannel } from "../../utils/channel";
 import useOnClickOutside from "../../hooks/useOnClickOutside";
-
-const MessageSchema = z.object({
-	user: z.object({
-		id: z.string(),
-		image: z.string(),
-		fullName: z.string(),
-	}),
-	text: z.string().min(1),
-	createdAt: z.date(),
-});
-
-type MessageType = z.infer<typeof MessageSchema>;
+import { ChannelSchema, MessageSchema, MessageType } from "../../types/channel";
 
 const formatTime = (date: Date) => {
 	const djs = dayjs(date);
@@ -41,15 +31,14 @@ const formatTime = (date: Date) => {
 
 const Message = ({ message }: { message: MessageType }) => {
 	const currentUser = (Math.random() * 10) % 2 === 0;
-
 	return (
 		<>
 			<p className="mb-2">
 				<span className="mr-2 text-sm font-bold text-slate-200 sm:text-base">
-					{message.user.fullName}
+					{message.username}
 				</span>
 				<span className="text-xs text-slate-400 sm:text-sm">
-					{formatTime(message.createdAt)}
+					{/* {formatTime(message.createdAt)} */}
 				</span>
 			</p>
 			<div
@@ -57,36 +46,75 @@ const Message = ({ message }: { message: MessageType }) => {
 					currentUser ? "bg-blue-600" : "bg-zinc-800"
 				}`}
 			>
-				<div className="mr-3 h-8 w-8">
-					<img src={message.user.image} className="rounded-full" />
+				<div className="mr-3 h-8 w-8 rounded-full bg-slate-300">
+					{/* <img src={message.user.image} className="rounded-full" /> */}
 				</div>
-				{message.text}
+				{message.name}
 			</div>
 		</>
 	);
 };
 
 const Channel = () => {
+	const queryClient = useQueryClient();
 	const { channelId } = useParams({ from: "/chat/$channelId" });
 	const { data: channel } = useQuery({
 		queryFn: () => getChannel(channelId),
 		queryKey: ["channel", channelId],
+		staleTime: Infinity,
 	});
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const { user } = useUser();
-	const [messages, setMessages] = useState<MessageType[]>([]);
 	if (!user) return null;
+	const [messages, setMessages] = useState<MessageType[]>([]);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
+	const { sendMessage, lastMessage, readyState } = useWebSocket(
+		`ws:${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`
+	);
+
+	const connectionStatus = {
+		[ReadyState.CONNECTING]: "Connecting",
+		[ReadyState.OPEN]: "Open",
+		[ReadyState.CLOSING]: "Closing",
+		[ReadyState.CLOSED]: "Closed",
+		[ReadyState.UNINSTANTIATED]: "Uninstantiated",
+	}[readyState];
+
+	useEffect(() => {
+		console.log("lastMessage", lastMessage);
+		if (!lastMessage) return;
+		// queryClient.setQueryData(["channel", channelId], (old: any) => {
+		// 	const oldChannel = ChannelSchema.extend({
+		// 		messages: MessageSchema.array(),
+		// 	}).safeParse(old);
+		// 	if (!oldChannel.success) return old;
+
+		// 	return {
+		// 		...oldChannel.data,
+		// 		messages: [
+		// 			...oldChannel.data.messages,
+		// 			JSON.parse(lastMessage.data),
+		// 		],
+		// 	};
+		// });
+		console.dir(JSON.parse(lastMessage.data));
+
+		setMessages((prev) => [...prev, JSON.parse(lastMessage.data)]);
+	}, [lastMessage]);
 
 	const scrollToBottom = useCallback(() => {
 		scrollRef.current?.scrollIntoView();
 	}, [scrollRef]);
 
 	useEffect(() => {
+		console.log(connectionStatus);
+	}, [connectionStatus]);
+
+	useEffect(() => {
 		scrollToBottom();
-	}, [messages, scrollToBottom]);
+	}, [channel?.messages, scrollToBottom]);
 
 	return (
 		<div className="flex flex-1 flex-col justify-end overflow-y-auto">
@@ -104,19 +132,9 @@ const Channel = () => {
 				<div ref={scrollRef} />
 			</div>
 			<Form
-				onSubmit={(data) => {
-					setMessages([
-						...messages,
-						{
-							user: {
-								id: user.id,
-								image: user.profileImageUrl,
-								fullName: user.fullName || user.username || "",
-							},
-							text: data.message,
-							createdAt: new Date(),
-						},
-					]);
+				onSubmit={(data: { message: string }) => {
+					console.log("MESSAGE", data.message);
+					sendMessage(data.message);
 				}}
 			>
 				{({ submit }) => (
