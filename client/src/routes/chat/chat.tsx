@@ -49,7 +49,7 @@ const Chat = () => {
 				>
 					LOG TOKEN
 				</button>
-				<UserButton />
+				<UserButton afterSignOutUrl="/" />
 			</header>
 			<div className="relative z-10 flex h-screen max-h-screen w-screen flex-1 justify-start overflow-y-auto">
 				{drawerOpen && (
@@ -66,7 +66,7 @@ const Chat = () => {
 						<div className="relative mb-4 flex-1 overflow-y-auto px-4  scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-thumb-rounded">
 							{channels &&
 								channels.map((channel, index) => {
-									const isActive = channelId === channel.id;
+									console.log(channel.id, channelId);
 									return (
 										<Link
 											key={channel.id}
@@ -79,11 +79,13 @@ const Chat = () => {
 											}`}
 										>
 											<div
-												className={`mr-2 h-full w-[6px] overflow-hidden bg-zinc-700 transition-colors ${
-													isActive
-														? "bg-zinc-300"
-														: "group-hover:bg-zinc-300"
-												}`}
+												className="mr-2 h-full w-[6px] overflow-hidden bg-zinc-700 transition-colors"
+												style={{
+													backgroundColor:
+														channelId === channel.id
+															? "rgb(241 245 249)"
+															: "rgb(63 63 70)",
+												}}
 											/>
 											<p className="overflow-hidden text-ellipsis">
 												{channel.name}
@@ -94,7 +96,7 @@ const Chat = () => {
 						</div>
 						{activeChannel && (
 							<button
-								className="mx-4 mb-4 flex h-8 items-center justify-center rounded bg-red-500 font-bold"
+								className="mx-4 mb-4 flex h-8 items-center justify-center rounded border border-red-500 font-bold text-red-500 transition-colors hover:bg-white/5"
 								onClick={() => {
 									mutate(activeChannel.id);
 								}}

@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-router";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
-import Home from "./routes/home";
 import SignIn from "./routes/sign-in";
 import SignUp from "./routes/sign-up";
 import Channel from "./routes/chat/channel";
@@ -17,7 +16,7 @@ import CreateChannel from "./routes/chat/create";
 import Chat from "./routes/chat/chat";
 
 import queryClient from "./utils/queryclient";
-import { getChannel, getChannels } from "./utils/channel";
+import { getChannel } from "./utils/channel";
 
 // Create a root route
 const rootRoute = new RootRoute({
@@ -29,7 +28,7 @@ const rootRoute = new RootRoute({
 const homeRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/",
-	component: Home,
+	component: () => <Navigate to="/chat" />,
 });
 
 const signInRoute = new Route({
@@ -47,9 +46,9 @@ const signUpRoute = new Route({
 export const chatRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/chat",
-	onLoad: async () => {
-		await queryClient.ensureQueryData(["channels"], getChannels);
-	},
+	// onLoad: async () => {
+	// 	await queryClient.ensureQueryData(["channels"], getChannels);
+	// },
 	component: () => (
 		<>
 			<SignedIn>
