@@ -31,24 +31,21 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
     if (!channelRooms[id]) channelRooms[id] = new Set();
 
     channelRooms[id].add(connection);
-    const user = `User{${channelRooms[id].size}}`;
 
     // Client connect
     //console.dir(`Client connected: ${req.user!.emailAddresses[0].emailAddress}`);
-    console.dir(`Client connected: ${user}`);
 
     // Create random number
     const randomNumber = Math.floor(Math.random() * 1000) + 1;
 
     connection.socket.on("message", (message: unknown) => {
-        console.log(typeof message);
         // Handle incoming messages from the WebSocket connection
         // broadcast the messages to other clients in the same channel
         channelRooms[id].forEach((socket) => {
             // socket.socket.send(`Room ${id}:	${req.user!.emailAddresses[0].emailAddress}: ${message}`);
             socket.socket.send(
                 JSON.stringify({
-                    id: Math.floor(Math.random() * 1000) + 1,
+                    id: randomNumber,
                     name: `${message}`,
                     userId: req.user?.id ?? "",
                     username: req.user?.username ?? "Username",

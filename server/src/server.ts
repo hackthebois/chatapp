@@ -22,7 +22,6 @@ const start = async () => {
             allowedHeaders: ["Authorization", "Content-Type"],
         });
         await fastify.register(FastifyWebsocket);
-
         await fastify.register(channelRoutes);
         await fastify.register(messageRoutes);
         await fastify.listen({ port: Number(process.env.PORT) || 8000 });
