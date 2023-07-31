@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { Form, Field } from "houseform";
 import { z } from "zod";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -56,7 +56,7 @@ const Message = ({ message }: { message: MessageType }) => {
 };
 
 const Channel = () => {
-	const queryClient = useQueryClient();
+	const { getToken } = useAuth();
 	const { channelId } = useParams({ from: "/chat/$channelId" });
 	const { data: channel } = useQuery({
 		queryFn: () => getChannel(channelId),
@@ -70,8 +70,17 @@ const Channel = () => {
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
+	const { data: token } = useQuery({
+		queryFn: async () => await getToken(),
+		queryKey: ["token"],
+	});
 	const { sendMessage, lastMessage, readyState } = useWebSocket(
-		`ws:${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`
+		`ws:${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,
+		{
+			queryParams: {
+				token: token ?? "",
+			},
+		}
 	);
 
 	const connectionStatus = {

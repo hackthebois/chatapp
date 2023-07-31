@@ -21,8 +21,8 @@ export const socketAuthenticate = async (request: FastifyRequest<requestToken>, 
     else {
         request.user = user as ClerkUser;
         if (!user.privateMetadata.channelIds) {
-            request.user!.privateMetadata = { channelIds: [] };
-            await clerkClient.users.updateUser(user.id, { privateMetadata: request.user!.privateMetadata });
+            request.user.privateMetadata = { channelIds: [] };
+            await clerkClient.users.updateUser(user.id, { privateMetadata: request.user.privateMetadata });
         }
     }
 };
