@@ -21,6 +21,7 @@ const start = async () => {
             origin: "*",
             allowedHeaders: ["Authorization", "Content-Type"],
         });
+
         await fastify.register(FastifyWebsocket);
         await fastify.register(channelRoutes);
         await fastify.register(messageRoutes);

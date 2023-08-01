@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FastifyReply, FastifyRequest } from "fastify";
 import { NewChannel, channels } from "../db/schema";
 import { db } from "../db/db";
 import { v4 as uuid } from "uuid";
-import { and, eq, inArray } from "drizzle-orm/expressions";
+import { and, eq } from "drizzle-orm/expressions";
 import { clerkClient } from "@clerk/fastify";
 import { sql } from "drizzle-orm/sql";
 
@@ -15,14 +16,14 @@ interface GetChannelDTO {
 }
 
 export const getChannels = async (req: FastifyRequest, res: FastifyReply) => {
-	if (req.user!.privateMetadata.channelIds.length > 0)
-		res.send(
-			await db
-				.select()
-				.from(channels)
-				.where(sql`${channels.id} in ${req.user!.privateMetadata.channelIds}`)
-		);
-	else res.send([])
+    if (req.user!.privateMetadata.channelIds.length > 0)
+        res.send(
+            await db
+                .select()
+                .from(channels)
+                .where(sql`${channels.id} in ${req.user!.privateMetadata.channelIds}`)
+        );
+    else res.send([]);
 };
 
 export const getChannel = async (req: FastifyRequest<{ Params: GetChannelDTO }>, res: FastifyReply) => {

@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, datetime, text, uniqueIndex, primaryKey, foreignKey } from "drizzle-orm/mysql-core";
+import { mysqlTable, varchar, datetime, text, uniqueIndex } from "drizzle-orm/mysql-core";
 import { InferModel } from "drizzle-orm";
 
 export const channels = mysqlTable("channels", {
@@ -18,7 +18,6 @@ export const messages = mysqlTable(
         id: varchar("id", { length: 256 }).primaryKey(),
         message: text("message").notNull(),
         userId: varchar("user_id", { length: 256 }).notNull(),
-        username: varchar("username", { length: 100 }).notNull(),
         createdAt: datetime("created_at").notNull().default(new Date()),
         updatedAt: datetime("updated_at").notNull().default(new Date()),
         channelId: varchar("channel_id", { length: 256 }).notNull(),
