@@ -83,7 +83,6 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
                 JSON.stringify({
                     ...messageParams,
                     profileImage: req.user!.profileImageUrl ?? "",
-                    email: req.user!.emailAddresses[0].emailAddress ?? "",
                     firstName: req.user!.firstName ?? "",
                     lastName: req.user!.lastName ?? "",
                 })
