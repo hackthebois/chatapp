@@ -13,8 +13,6 @@ export interface requestToken extends RequestGenericInterface {
 export const socketAuthenticate = async (request: FastifyRequest<requestToken>, reply: FastifyReply) => {
     const { token } = request.query;
 
-    console.dir("HERE");
-
     const res = await clerk.authenticateRequest({ headerToken: token });
     const userId = res.toAuth()?.userId;
     const user = userId ? await clerkClient.users.getUser(userId) : null;

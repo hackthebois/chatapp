@@ -8,7 +8,6 @@ import {
     updateChannel,
     joinChannel,
 } from "../controllers/channel.controller";
-import messageRoutes from "./message.route";
 
 // Item schema
 const Channel = {

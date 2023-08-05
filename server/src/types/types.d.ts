@@ -6,6 +6,6 @@ declare module "fastify" {
     }
 }
 
-export interface ClerkUser extends User {
+export declare class ClerkUser extends User {
     privateMetadata: { channelIds: string[] };
 }

@@ -6,7 +6,6 @@ import { Message, NewMessage, messages } from "../db/schema";
 import { eq } from "drizzle-orm/expressions";
 import { v4 as uuid } from "uuid";
 import { clerkClient } from "@clerk/fastify";
-import { users } from "@clerk/clerk-sdk-node";
 
 export interface requestID extends RequestGenericInterface {
     Params: {
