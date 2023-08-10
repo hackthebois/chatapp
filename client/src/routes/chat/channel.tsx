@@ -106,7 +106,7 @@ const Channel = () => {
 				if (!old) return undefined;
 				const newMessage = JSON.parse(lastMessage.data);
 				console.log("setting messages", [...old, newMessage]);
-				return [...old, newMessage];
+				return [newMessage, ...old];
 			}
 		);
 	}, [lastMessage]);
