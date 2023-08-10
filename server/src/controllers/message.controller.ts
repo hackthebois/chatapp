@@ -74,16 +74,16 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
     connection.socket.on("message", (message: unknown) => {
         // Handle incoming messages from the WebSocket connection
         // broadcast the messages to other clients in the same channel
-        channelRooms[id].forEach((socket) => {
-            const messageParams = {
-                id: uuid(),
-                userId: req.user!.id,
-                channelId: id,
-                message: `${message}`,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
+        const messageParams = {
+            id: uuid(),
+            userId: req.user!.id,
+            channelId: id,
+            message: `${message}`,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
 
+        channelRooms[id].forEach((socket) => {
             socket.socket.send(
                 JSON.stringify({
                     ...messageParams,
@@ -92,9 +92,9 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
                     lastName: req.user!.lastName ?? "",
                 })
             );
-
-            updateChannelMessages(messageParams);
         });
+
+        updateChannelMessages(messageParams);
     });
 
     connection.socket.on("close", () => {
