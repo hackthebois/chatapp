@@ -2,9 +2,13 @@ import { z } from "zod";
 
 export const MessageSchema = z.object({
 	id: z.string(),
-	username: z.string(),
-	name: z.string(),
+	firstName: z.string(),
+	lastName: z.string(),
+	profileImage: z.string(),
 	userId: z.string(),
+	message: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
 });
 export type MessageType = z.infer<typeof MessageSchema>;
 

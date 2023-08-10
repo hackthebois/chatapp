@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { FastifyRequest, FastifyReply, RequestGenericInterface } from "fastify";
+import { clerkClient } from "@clerk/fastify";
 import { SocketStream } from "@fastify/websocket";
+import { eq } from "drizzle-orm";
+import { FastifyReply, FastifyRequest, RequestGenericInterface } from "fastify";
+import { v4 as uuid } from "uuid";
 import { db } from "../db/db";
 import { Message, NewMessage, messages } from "../db/schema";
-import { eq } from "drizzle-orm/expressions";
-import { v4 as uuid } from "uuid";
-import { clerkClient } from "@clerk/fastify";
 
 export interface requestID extends RequestGenericInterface {
     Params: {
@@ -37,7 +37,7 @@ export const getChannelMessages = async (req: FastifyRequest<requestID>, res: Fa
     const combinedMessages = messageData.map((msg) => ({
         ...msg,
         firstName: usersDataMap[msg.userId]?.firstName ?? "",
-        firstLast: usersDataMap[msg.userId]?.firstLast ?? "",
+        lastName: usersDataMap[msg.userId]?.lastName ?? "",
         profileImage: usersDataMap[msg.userId]?.profileImageUrl,
     }));
     res.send(combinedMessages);
@@ -76,12 +76,14 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
                 userId: req.user!.id,
                 channelId: id,
                 message: `${message}`,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             };
 
             socket.socket.send(
                 JSON.stringify({
                     ...messageParams,
-                    profileImage: req.user!.profileImageUrl ?? "",
+                    profileImage: req.user!.imageUrl ?? "",
                     firstName: req.user!.firstName ?? "",
                     lastName: req.user!.lastName ?? "",
                 })

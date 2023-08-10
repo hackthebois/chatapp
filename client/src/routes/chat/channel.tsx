@@ -1,23 +1,22 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
-import { Form, Field } from "houseform";
-import { z } from "zod";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { FaSmileBeam } from "react-icons/fa";
-import isToday from "dayjs/plugin/isToday";
-import isYesterday from "dayjs/plugin/isYesterday";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
+import { Field, Form } from "houseform";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FaSmileBeam } from "react-icons/fa";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { z } from "zod";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
 import dayjs from "dayjs";
+import useOnClickOutside from "../../hooks/useOnClickOutside";
+import { MessageType } from "../../types/channel";
+import { getChannelMessages } from "../../utils/channel";
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
-import React from "react";
-import { useParams } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getChannel } from "../../utils/channel";
-import useOnClickOutside from "../../hooks/useOnClickOutside";
-import { ChannelSchema, MessageSchema, MessageType } from "../../types/channel";
 
 const formatTime = (date: Date) => {
 	const djs = dayjs(date);
@@ -35,10 +34,10 @@ const Message = ({ message }: { message: MessageType }) => {
 		<>
 			<p className="mb-2">
 				<span className="mr-2 text-sm font-bold text-slate-200 sm:text-base">
-					{message.username}
+					{`${message.firstName} ${message.lastName}`}
 				</span>
 				<span className="text-xs text-slate-400 sm:text-sm">
-					{/* {formatTime(message.createdAt)} */}
+					{formatTime(new Date(message.createdAt))}
 				</span>
 			</p>
 			<div
@@ -47,9 +46,9 @@ const Message = ({ message }: { message: MessageType }) => {
 				}`}
 			>
 				<div className="mr-3 h-8 w-8 rounded-full bg-slate-300">
-					{/* <img src={message.user.image} className="rounded-full" /> */}
+					<img src={message.profileImage} className="rounded-full" />
 				</div>
-				{message.name}
+				{message.message}
 			</div>
 		</>
 	);
@@ -58,21 +57,20 @@ const Message = ({ message }: { message: MessageType }) => {
 const Channel = () => {
 	const { getToken } = useAuth();
 	const { channelId } = useParams({ from: "/chat/$channelId" });
-	const { data: channel } = useQuery({
-		queryFn: () => getChannel(channelId),
-		queryKey: ["channel", channelId],
-		staleTime: Infinity,
-	});
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const { user } = useUser();
+	const queryClient = useQueryClient();
 	if (!user) return null;
-	const [messages, setMessages] = useState<MessageType[]>([]);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
 	const { data: token } = useQuery({
 		queryFn: async () => await getToken(),
 		queryKey: ["token"],
+	});
+	const { data: messages } = useQuery({
+		queryKey: ["messages", channelId],
+		queryFn: () => getChannelMessages(channelId),
 	});
 	const { sendMessage, lastMessage, readyState } = useWebSocket(
 		`ws:${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,
@@ -94,23 +92,16 @@ const Channel = () => {
 	useEffect(() => {
 		console.log("lastMessage", lastMessage);
 		if (!lastMessage) return;
-		// queryClient.setQueryData(["channel", channelId], (old: any) => {
-		// 	const oldChannel = ChannelSchema.extend({
-		// 		messages: MessageSchema.array(),
-		// 	}).safeParse(old);
-		// 	if (!oldChannel.success) return old;
+		queryClient.setQueryData<MessageType[] | undefined>(
+			["messages", channelId],
+			(old) => {
+				if (!old) return undefined;
+				const newMessage = JSON.parse(lastMessage.data);
+				console.log("setting messages", [...old, newMessage]);
 
-		// 	return {
-		// 		...oldChannel.data,
-		// 		messages: [
-		// 			...oldChannel.data.messages,
-		// 			JSON.parse(lastMessage.data),
-		// 		],
-		// 	};
-		// });
-		console.dir(JSON.parse(lastMessage.data));
-
-		setMessages((prev) => [...prev, JSON.parse(lastMessage.data)]);
+				return [...old, newMessage];
+			}
+		);
 	}, [lastMessage]);
 
 	const scrollToBottom = useCallback(() => {
@@ -123,21 +114,22 @@ const Channel = () => {
 
 	useEffect(() => {
 		scrollToBottom();
-	}, [channel?.messages, scrollToBottom]);
+	}, [scrollToBottom]);
 
 	return (
 		<div className="flex flex-1 flex-col justify-end overflow-y-auto">
 			<div className="mt-4 flex flex-col items-start overflow-y-auto px-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
-				{messages.map((message, index) => (
-					<div
-						key={index}
-						className={`flex flex-col items-start ${
-							index === messages.length - 1 ? "" : "pb-4"
-						}`}
-					>
-						<Message key={index} message={message} />
-					</div>
-				))}
+				{messages &&
+					messages.map((message, index) => (
+						<div
+							key={index}
+							className={`flex flex-col items-start ${
+								index === messages.length - 1 ? "" : "pb-4"
+							}`}
+						>
+							<Message key={index} message={message} />
+						</div>
+					))}
 				<div ref={scrollRef} />
 			</div>
 			<Form

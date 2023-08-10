@@ -13,10 +13,7 @@ export const getChannel = async (id: string) => {
 		throw new Error("Network response error");
 	}
 	const data = await res.json();
-	data.messages = [];
-	return ChannelSchema.extend({ messages: MessageSchema.array() }).parse(
-		data
-	);
+	return ChannelSchema.parse(data);
 };
 
 export const getChannels = async () => {
@@ -30,4 +27,21 @@ export const getChannels = async () => {
 	}
 	const data = await res.json();
 	return ChannelSchema.array().parse(data);
+};
+
+export const getChannelMessages = async (id: string) => {
+	const res = await fetch(
+		`${import.meta.env.VITE_SERVER_URL}/channels/${id}/chat`,
+		{
+			headers: {
+				Authorization: `Bearer ${await window.Clerk.session.getToken()}`,
+			},
+		}
+	);
+	if (!res.ok) {
+		throw new Error("Network response error");
+	}
+	const data = await res.json();
+	console.log("MESSAGES", data);
+	return MessageSchema.array().parse(data);
 };

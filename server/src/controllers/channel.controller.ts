@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { FastifyReply, FastifyRequest } from "fastify";
-import { NewChannel, channels } from "../db/schema";
-import { db } from "../db/db";
-import { v4 as uuid } from "uuid";
-import { and, eq } from "drizzle-orm/expressions";
 import { clerkClient } from "@clerk/fastify";
-import { sql } from "drizzle-orm/sql";
+import { and, eq, sql } from "drizzle-orm";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { v4 as uuid } from "uuid";
+import { db } from "../db/db";
+import { NewChannel, channels } from "../db/schema";
 
 interface ChangeChannelDTO {
     name: string;
