@@ -73,6 +73,9 @@ const Channel = () => {
 	const { data: messages } = useQuery({
 		queryKey: ["messages", channelId],
 		queryFn: () => getChannelMessages(channelId),
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
 	});
 	const { sendMessage, lastMessage, readyState } = useWebSocket(
 		`${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,

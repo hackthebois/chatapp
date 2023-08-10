@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { clerkClient } from "@clerk/fastify";
 import { SocketStream } from "@fastify/websocket";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { FastifyReply, FastifyRequest, RequestGenericInterface } from "fastify";
 import { v4 as uuid } from "uuid";
 import { db } from "../db/db";
@@ -22,7 +22,11 @@ export const getChannelMessages = async (req: FastifyRequest<requestID>, res: Fa
         res.status(400).send("You Do not have Access to this Channel");
     }
 
-    const messageData: Message[] = await db.select().from(messages).where(eq(messages.channelId, id));
+    const messageData: Message[] = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.channelId, id))
+        .orderBy(desc(messages.createdAt));
 
     const userIds = Array.from(new Set(messageData.map((msg) => msg.userId))); // Extract unique userIds from the messages
     const usersData = await queryUser(userIds);
