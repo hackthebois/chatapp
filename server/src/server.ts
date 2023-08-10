@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import Fastify from "fastify";
 import { clerkPlugin } from "@clerk/fastify";
-import channelRoutes from "./routes/channel.route";
-import messageRoutes from "./routes/message.route";
 import cors from "@fastify/cors";
 import FastifyWebsocket from "@fastify/websocket";
+import Fastify from "fastify";
+import channelRoutes from "./routes/channel.route";
+import messageRoutes from "./routes/message.route";
 
 const fastify = Fastify({ logger: true });
 
@@ -25,7 +25,7 @@ const start = async () => {
         await fastify.register(FastifyWebsocket);
         await fastify.register(channelRoutes);
         await fastify.register(messageRoutes);
-        await fastify.listen({ port: Number(process.env.PORT) || 8000 });
+        await fastify.listen({ port: Number(process.env.PORT) || 8000, host: "0.0.0.0" });
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
