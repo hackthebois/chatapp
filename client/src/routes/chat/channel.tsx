@@ -73,7 +73,7 @@ const Channel = () => {
 		queryFn: () => getChannelMessages(channelId),
 	});
 	const { sendMessage, lastMessage, readyState } = useWebSocket(
-		`ws:${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,
+		`${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,
 		{
 			queryParams: {
 				token: token ?? "",
