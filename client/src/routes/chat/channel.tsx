@@ -3,7 +3,8 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
-import Timezone from "dayjs/plugin/timezone";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { Field, Form } from "houseform";
 import { useEffect, useRef, useState } from "react";
 import { FaCopy, FaSmileBeam } from "react-icons/fa";
@@ -17,8 +18,9 @@ import useOnClickOutside from "../../hooks/useOnClickOutside";
 import { MessageType } from "../../types/channel";
 import { getChannelMessages } from "../../utils/channel";
 dayjs.extend(isToday);
+dayjs.extend(utc);
 dayjs.extend(isYesterday);
-dayjs.extend(Timezone);
+dayjs.extend(timezone);
 dayjs.tz.setDefault("America/Toronto");
 
 const formatTime = (date: Date) => {
