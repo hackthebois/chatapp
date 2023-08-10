@@ -80,8 +80,8 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
                 userId: req.user!.id,
                 channelId: id,
                 message: `${message}`,
-                createdAt: new Date(new Date().toLocaleString("en-US", { timeZone: "America/Toronto" })),
-                updatedAt: new Date(new Date().toLocaleString("en-US", { timeZone: "America/Toronto" })),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             };
 
             socket.socket.send(
