@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { clerkClient } from "@clerk/fastify";
 import { SocketStream } from "@fastify/websocket";
-import { asc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { FastifyReply, FastifyRequest, RequestGenericInterface } from "fastify";
 import { v4 as uuid } from "uuid";
 import { db } from "../db/db";
@@ -26,7 +26,7 @@ export const getChannelMessages = async (req: FastifyRequest<requestID>, res: Fa
         .select()
         .from(messages)
         .where(eq(messages.channelId, id))
-        .orderBy(asc(messages.createdAt));
+        .orderBy(desc(messages.createdAt));
 
     const userIds = Array.from(new Set(messageData.map((msg) => msg.userId))); // Extract unique userIds from the messages
     const usersData = await queryUser(userIds);
@@ -80,8 +80,8 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
                 userId: req.user!.id,
                 channelId: id,
                 message: `${message}`,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                createdAt: new Date(new Date().toLocaleString("en-US", { timeZone: "America/Toronto" })),
+                updatedAt: new Date(new Date().toLocaleString("en-US", { timeZone: "America/Toronto" })),
             };
 
             socket.socket.send(

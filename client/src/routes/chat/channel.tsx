@@ -4,7 +4,7 @@ import Picker from "@emoji-mart/react";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import { Field, Form } from "houseform";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaCopy, FaSmileBeam } from "react-icons/fa";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
@@ -74,6 +74,7 @@ const Channel = () => {
 		queryKey: ["messages", channelId],
 		queryFn: () => getChannelMessages(channelId),
 	});
+
 	const { sendMessage, lastMessage, readyState } = useWebSocket(
 		`${import.meta.env.VITE_WEBSOCKET_URL}/ws/channels/${channelId}`,
 		{
@@ -100,23 +101,14 @@ const Channel = () => {
 				if (!old) return undefined;
 				const newMessage = JSON.parse(lastMessage.data);
 				console.log("setting messages", [...old, newMessage]);
-
 				return [...old, newMessage];
 			}
 		);
 	}, [lastMessage]);
 
-	const scrollToBottom = useCallback(() => {
-		scrollRef.current?.scrollIntoView();
-	}, [scrollRef]);
-
 	useEffect(() => {
 		console.log(connectionStatus);
 	}, [connectionStatus]);
-
-	useEffect(() => {
-		scrollToBottom();
-	}, [scrollToBottom]);
 
 	return (
 		<div className="flex flex-1 flex-col justify-end overflow-y-auto">
@@ -127,13 +119,13 @@ const Channel = () => {
 				<p className="mr-2 text-sm text-slate-300">Copy Join ID</p>
 				<FaCopy size={20} className="text-slate-300" />
 			</button>
-			<div className="mt-4 flex flex-col items-start overflow-y-auto px-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
+			<div className="mt-4 flex flex-col-reverse items-start overflow-y-auto px-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
 				{messages &&
 					messages.map((message, index) => (
 						<div
 							key={index}
 							className={`flex flex-col items-start ${
-								index === messages.length - 1 ? "" : "pb-4"
+								index === 0 ? "" : "pb-4"
 							}`}
 						>
 							<Message key={index} message={message} />
