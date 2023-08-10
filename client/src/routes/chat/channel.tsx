@@ -64,10 +64,12 @@ const Channel = () => {
 	if (!user) return null;
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	useOnClickOutside(ref, () => setShowEmojiPicker(false));
+
 	const { data: token } = useQuery({
 		queryFn: async () => await getToken(),
 		queryKey: ["token"],
 	});
+
 	const { data: messages } = useQuery({
 		queryKey: ["messages", channelId],
 		queryFn: () => getChannelMessages(channelId),
