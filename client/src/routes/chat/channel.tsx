@@ -5,7 +5,7 @@ import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import { Field, Form } from "houseform";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FaSmileBeam } from "react-icons/fa";
+import { FaCopy, FaSmileBeam } from "react-icons/fa";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
 
@@ -120,6 +120,13 @@ const Channel = () => {
 
 	return (
 		<div className="flex flex-1 flex-col justify-end overflow-y-auto">
+			<button
+				onClick={() => navigator.clipboard.writeText(channelId)}
+				className="absolute right-4 top-4 flex cursor-pointer p-2"
+			>
+				<p className="mr-2 text-sm text-slate-300">Copy Join ID</p>
+				<FaCopy size={20} className="text-slate-300" />
+			</button>
 			<div className="mt-4 flex flex-col items-start overflow-y-auto px-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-700 scrollbar-track-rounded scrollbar-thumb-rounded">
 				{messages &&
 					messages.map((message, index) => (

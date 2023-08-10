@@ -45,3 +45,18 @@ export const getChannelMessages = async (id: string) => {
 	console.log("MESSAGES", data);
 	return MessageSchema.array().parse(data);
 };
+
+export const joinChannel = async (id: string) => {
+	const res = await fetch(
+		`${import.meta.env.VITE_SERVER_URL}/channels/${id}/join`,
+		{
+			headers: {
+				Authorization: `Bearer ${await window.Clerk.session.getToken()}`,
+			},
+		}
+	);
+	if (!res.ok) {
+		throw new Error("Network response error");
+	}
+	return { id };
+};

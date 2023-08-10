@@ -1,7 +1,7 @@
 import { UserButton, useAuth } from "@clerk/clerk-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaBars, FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { getChannels } from "../../utils/channel";
 
@@ -41,13 +41,6 @@ const Chat = () => {
 					onClick={() => setDrawerOpen(!drawerOpen)}
 				>
 					<FaBars size={20} className="text-zinc-200" />
-				</button>
-				<button
-					onClick={async () => {
-						console.log(await getToken({ template: "User_Token" }));
-					}}
-				>
-					LOG TOKEN
 				</button>
 				<UserButton afterSignOutUrl="/" />
 			</header>
