@@ -15,6 +15,8 @@ export type NewChannel = InferModel<typeof channels, "insert">;
 export const messages = mysqlTable("messages", {
     id: varchar("id", { length: 256 }).primaryKey(),
     message: text("message").notNull(),
+    username: varchar("username", { length: 256 }).notNull(),
+    profileImage: text("profile_image"),
     userId: varchar("user_id", { length: 256 }).notNull(),
     createdAt: datetime("created_at").notNull().default(new Date()),
     updatedAt: datetime("updated_at").notNull().default(new Date()),

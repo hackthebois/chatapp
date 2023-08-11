@@ -28,29 +28,7 @@ export const getChannelMessages = async (req: FastifyRequest<requestID>, res: Fa
         .where(eq(messages.channelId, id))
         .orderBy(desc(messages.createdAt));
 
-    const userIds = Array.from(new Set(messageData.map((msg) => msg.userId))); // Extract unique userIds from the messages
-    const usersData = await queryUser(userIds);
-
-    // Create a mapping of userId to user data for easier access
-    const usersDataMap: { [userId: string]: any } = {};
-    userIds.forEach((userId, index) => {
-        usersDataMap[userId] = usersData[index];
-    });
-
-    // Combine the user data with the original message data
-    const combinedMessages = messageData.map((msg) => ({
-        ...msg,
-        firstName: usersDataMap[msg.userId]?.firstName ?? "",
-        lastName: usersDataMap[msg.userId]?.lastName ?? "",
-        profileImage: usersDataMap[msg.userId]?.profileImageUrl,
-    }));
-    res.send(combinedMessages);
-};
-
-const queryUser = async (userIds: string[]) => {
-    const users = await clerkClient.users.getUserList({ userId: userIds });
-    //console.dir(users);
-    return users;
+    res.send(messageData);
 };
 
 const updateChannelMessages = async (messageParams: NewMessage) => {
@@ -77,6 +55,8 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
         const messageParams = {
             id: uuid(),
             userId: req.user!.id,
+            username: `${req.user!.firstName ?? ""} ${req.user!.lastName ?? ""}`,
+            profileImage: req.user!.imageUrl ?? "",
             channelId: id,
             message: `${message}`,
             createdAt: new Date(),
@@ -86,10 +66,7 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
         channelRooms[id].forEach((socket) => {
             socket.socket.send(
                 JSON.stringify({
-                    ...messageParams,
-                    profileImage: req.user!.imageUrl ?? "",
-                    firstName: req.user!.firstName ?? "",
-                    lastName: req.user!.lastName ?? "",
+                    messageParams,
                 })
             );
         });
