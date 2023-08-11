@@ -2,8 +2,7 @@ import { z } from "zod";
 
 export const MessageSchema = z.object({
 	id: z.string(),
-	firstName: z.string(),
-	lastName: z.string(),
+	username: z.string(),
 	profileImage: z.string(),
 	userId: z.string(),
 	message: z.string(),

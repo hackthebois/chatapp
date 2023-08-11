@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { clerkClient } from "@clerk/fastify";
 import { SocketStream } from "@fastify/websocket";
 import { desc, eq } from "drizzle-orm";
 import { FastifyReply, FastifyRequest, RequestGenericInterface } from "fastify";
@@ -66,7 +65,7 @@ export const liveChat = (connection: SocketStream, req: FastifyRequest<requestID
         channelRooms[id].forEach((socket) => {
             socket.socket.send(
                 JSON.stringify({
-                    messageParams,
+                    ...messageParams,
                 })
             );
         });

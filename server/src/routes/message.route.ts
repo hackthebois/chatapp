@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import authenticate from "../guards/authenticate";
 import { getChannelMessages, liveChat } from "../controllers/message.controller";
+import authenticate from "../guards/authenticate";
 import socketAuthenticate from "../guards/socketAuthenticate";
 
 // Item schema
@@ -11,8 +11,7 @@ const Message = {
         channelId: { type: "string" },
         userId: { type: "string" },
         profileImage: { type: "string" },
-        firstName: { type: "string" },
-        lastName: { type: "string" },
+        username: { type: "string" },
         message: { type: "string" },
         createdAt: { type: "string" },
         updatedAt: { type: "string" },

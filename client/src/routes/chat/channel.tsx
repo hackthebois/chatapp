@@ -39,7 +39,7 @@ const Message = ({ message }: { message: MessageType }) => {
 		<>
 			<p className="mb-2">
 				<span className="mr-2 text-sm font-bold text-slate-200 sm:text-base">
-					{`${message.firstName} ${message.lastName}`}
+					{`${message.username}`}
 				</span>
 				<span className="text-xs text-slate-400 sm:text-sm">
 					{formatTime(new Date(message.createdAt))}
