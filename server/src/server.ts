@@ -8,7 +8,7 @@ import Fastify from "fastify";
 import channelRoutes from "./routes/channel.route";
 import messageRoutes from "./routes/message.route";
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify();
 
 fastify.get("/", (req, res) => {
     res.send("MADE IT");
