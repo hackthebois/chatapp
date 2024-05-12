@@ -1,12 +1,6 @@
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-import { connect } from "@planetscale/database";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 
-// create the connection
-const connection = connect({
-    host: process.env.DATABASE_HOST,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-});
-
-export const db = drizzle(connection, { logger: true });
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const db = drizzle(neon(process.env.DATABASE_URL!), { logger: true });
